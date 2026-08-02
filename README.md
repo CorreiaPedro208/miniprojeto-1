@@ -2,9 +2,9 @@
 
 > **Entrega: sexta-feira, 07/08/2026.**
 > Link do repositório no formulário de entrega do site do Trilha
-> ([otrilha.com](https://otrilha.com)). Só o link — nada de zip, nada de email.
+> ([otrilha.com](https://otrilha.com)). Só o link, nada de zip, nada de email.
 
-Vocês vão construir um analisador do catálogo da **TrilhaSonora** — uma
+Vocês vão construir um analisador do catálogo da **TrilhaSonora**, uma
 plataforma fictícia de streaming musical. O resultado é um produto de verdade:
 uma classe que modela o catálogo, um menu interativo no terminal e um modo
 batch que responde 10 mil consultas dentro de um orçamento de tempo.
@@ -15,13 +15,13 @@ batch que responde 10 mil consultas dentro de um orçamento de tempo.
 
 O catálogo que vocês vão receber tem músicas e álbuns reais: Taylor Swift,
 BTS, Sade, Deftones, Charlie Brown Jr. e vários outros. Os 33 usuários do
-catálogo são pessoas da organização do Trilha — e algumas playlists foram
+catálogo são pessoas da organização do Trilha, e algumas playlists foram
 plantadas com gosto bem característico. Quando vocês cruzarem o nome com a
 playlist, vão reconhecer.
 
 Uma coisa importante antes de começar: **o dado vem sujo. É de propósito.**
 A vida real é assim. Nenhuma das esquisitices que vocês encontrarem é bug
-nosso — cada uma está ali para forçar uma técnica específica.
+nosso: cada uma está ali para forçar uma técnica específica.
 
 Se travar, pergunta. É pra isso que a gente existe.
 
@@ -45,7 +45,7 @@ de vocês:
 4. Comecem a preencher os arquivos `catalogo.py`, `main.py` e `cli.py`,
    que já vieram aqui como esqueletos vazios.
 
-Não precisa instalar nada. **Zero dependências externas** — tudo que o
+Não precisa instalar nada. **Zero dependências externas**: tudo que o
 projeto usa está na biblioteca padrão do Python. Se vocês precisarem de
 `pip install` alguma coisa, provavelmente pegaram um caminho mais difícil
 do que o necessário.
@@ -76,9 +76,9 @@ geram. O `README.md` vocês reescrevem.
 
 Vocês recebem dois arquivos JSON com o mesmo schema:
 
-- **`catalogo_dev.json`** — 60 conteúdos. É por onde vocês começam: dá pra
+- **`catalogo_dev.json`**: 60 conteúdos. É por onde vocês começam: dá pra
   abrir e ler com os olhos.
-- **`catalogo_final.json`** — 20 mil conteúdos. É o da correção.
+- **`catalogo_final.json`**: 20 mil conteúdos. É o da correção.
 
 Os 60 do dev são exatamente os 60 primeiros do final, então o que funciona
 num funciona no outro.
@@ -131,7 +131,7 @@ As diferenças entre os dois tipos:
 - **`album`** tem `faixas` (lista de objetos com `numero`, `titulo` e `duracao_seg`).
 
 E `usuarios` é uma lista à parte: cada um tem `id`, `nome` e uma `playlist`,
-que é uma lista de ids de conteúdo — **a ordem da playlist importa**.
+que é uma lista de ids de conteúdo, e **a ordem da playlist importa**.
 
 ### As 7 sujeiras intencionais
 
@@ -141,7 +141,7 @@ que é uma lista de ids de conteúdo — **a ordem da playlist importa**.
 | `rating` como string `"8.3"` em vez de número | 3% | Conversão de tipos |
 | `data_adicionado` em 2 formatos (`2020-07-24` e `24/07/2020`) | 50/50 | Condicional + parsing de string |
 | `generos` como string solta, não lista | 15% | Checagem de tipo (`isinstance`) |
-| `generos` como lista aninhada (`["Pop", ["Synth-Pop"]]`, até 3 níveis) | 15% | Achatar estrutura recursiva — dá pra fazer com uma pilha |
+| `generos` como lista aninhada (`["Pop", ["Synth-Pop"]]`, até 3 níveis) | 15% | Achatar estrutura recursiva (dá pra fazer com uma pilha) |
 | `engajamento.execucoes` como string com vírgula (`"12,500,000"`) | 20% | Limpeza de string antes do `int()` |
 | Faixa de álbum com `duracao_seg: null` | 4% | Somar defensivamente, pulando os nulos |
 
@@ -155,14 +155,14 @@ uma tarde. Aqui vocês perdem cinco minutos porque já sabiam.
 
 O coração do projeto é a classe `Catalogo`, em `catalogo.py`. Ela carrega o
 JSON **uma vez** e expõe os métodos que o resto do código consome. Tanto o
-`main.py` quanto o `cli.py` usam essa classe — e nada além dela. Se o
+`main.py` quanto o `cli.py` usam essa classe, e nada além dela. Se o
 `cli.py` estiver abrindo o JSON na mão, tem coisa errada na modelagem.
 
 ### A interface obrigatória
 
 A classe precisa ter exatamente estes **16 métodos**, com exatamente estas
 assinaturas. Os nomes dos parâmetros importam (o `consultas.json` usa esses
-mesmos nomes — veja a seção *Modo batch*):
+mesmos nomes, veja a seção *Modo batch*):
 
 ```python
 class Catalogo:
@@ -195,21 +195,21 @@ Podem criar quantos métodos auxiliares quiserem além desses. O que não pode
 
 ### A fila de reprodução
 
-Os três últimos métodos são uma **fila de reprodução** — igual à "fila" do
+Os três últimos métodos são uma **fila de reprodução**, igual à "fila" do
 Spotify ou do Apple Music, e diferente da playlist. A `Catalogo` mantém
 **uma fila por instância**, que começa vazia no `__init__`.
 
-- **`enfileirar(conteudo_id)`** — adiciona o conteúdo **no final** da fila.
+- **`enfileirar(conteudo_id)`**: adiciona o conteúdo **no final** da fila.
   Se o id não existe no catálogo, **não** enfileira e retorna `False`.
   Se enfileirou, retorna `True`. Pode enfileirar o mesmo id várias vezes
   (uma música pode estar duas vezes na fila).
-- **`proximo()`** — remove e retorna o **primeiro** id da fila (FIFO,
+- **`proximo()`**: remove e retorna o **primeiro** id da fila (FIFO,
   o primeiro que entrou é o primeiro que sai). Fila vazia → `None`.
-- **`fila_atual()`** — retorna uma **cópia** da fila como `list`, na ordem
+- **`fila_atual()`**: retorna uma **cópia** da fila como `list`, na ordem
   FIFO (a frente primeiro). Fila vazia → `[]`.
 
 Pensem na estrutura de dados certa aqui. `list.pop(0)` funciona, mas remove
-do início de uma lista é O(n) — a `collections.deque` da biblioteca padrão
+do início de uma lista é O(n). A `collections.deque` da biblioteca padrão
 é O(1) nas duas pontas e é o jeito idiomático de fazer fila em Python.
 
 **Atenção ao estado:** a fila é a única parte do `Catalogo` que muda depois
@@ -221,12 +221,12 @@ vez que o `main.py` roda, parte da fila vazia.
 
 ### O resto da modelagem é decisão de vocês
 
-Criar `Musica`, `Album`, `Usuario`, `Faixa` — escolham o que faz sentido.
+Criar `Musica`, `Album`, `Usuario`, `Faixa`: escolham o que faz sentido.
 Mas atenção: **cada classe que vocês criarem precisa justificar a própria
 existência.** No `README.md` do repositório, escrevam 1 a 2 linhas por classe
 explicando por que ela existe e não é só um dicionário. A frase precisa ser
 do tipo "essa classe agrupa estado e comportamento que pertencem juntos
-porque..." — não vale "criei porque POO".
+porque...". Não vale "criei porque POO".
 
 Se vocês criarem uma classe que só guarda dados e nunca faz nada, ela não
 justifica. Se ela tem métodos que só fazem sentido para aquele tipo de dado,
@@ -263,7 +263,7 @@ TrilhaSonora
 ### O que cada opção precisa usar
 
 Toda opção do menu é uma casca fina em volta de um ou mais métodos da
-`Catalogo`. Não pode ter lógica de negócio dentro do `cli.py` — se vocês
+`Catalogo`. Não pode ter lógica de negócio dentro do `cli.py`. Se vocês
 estiverem achatando gênero ou convertendo data dentro do CLI, essa lógica
 está no arquivo errado.
 
@@ -273,7 +273,7 @@ está no arquivo errado.
 | 2 | `buscar_usuario_por_nome(nome)` → `playlist_de(usuario_id)` |
 | 3 | `buscar_usuario_por_nome(nome)` → `conteudo_na_posicao(usuario_id, posicao)` |
 | 4 | `buscar_usuario_por_nome(nome)` para cada nome → `intersecao_playlists(usuario_ids)` |
-| 5 | `rating_de`, `duracao_total_de`, `generos_de`, `plataformas_de`, `data_adicionado_de` e — só se for música — `execucoes_de` |
+| 5 | `rating_de`, `duracao_total_de`, `generos_de`, `plataformas_de`, `data_adicionado_de` e (só se for música) `execucoes_de` |
 | 6 | `conteudos_do_genero(genero)` |
 | 7 | `enfileirar(conteudo_id)` |
 | 8 | `proximo()` |
@@ -288,7 +288,7 @@ não existir, avise em vez de estourar um erro.
 
 **A posição da opção 3 é 1-based para o humano.** A pessoa digita `1` para
 ver o primeiro item da playlist, não `0`. O método `conteudo_na_posicao` em
-si continua 0-based — esse é o contrato da `Catalogo`, e é o que a correção
+si continua 0-based, esse é o contrato da `Catalogo`, e é o que a correção
 automática espera. A conversão `posicao_digitada - 1` mora dentro do
 `cli.py`. E antes de pedir a posição, mostre o tamanho da playlist:
 
@@ -302,10 +302,10 @@ Isso economiza chute do usuário.
 **Mostrem nome, não id.** Uma playlist impressa como
 `['t000009', 't000022', 't000041']` é inútil para um humano. Resolvam os ids
 para título e artista na hora de exibir. Um método auxiliar na `Catalogo`
-que devolve `"Diamond Life — Sade (álbum)"` a partir do id resolve isso e
+que devolve `"Diamond Life, de Sade (álbum)"` a partir do id resolve isso e
 serve várias opções do menu.
 
-Podem usar `print` e `input` normalmente — sem framework externo. O menu
+Podem usar `print` e `input` normalmente, sem framework externo. O menu
 não pode quebrar se a pessoa digitar besteira: uma letra onde se espera
 número, um id que não existe, um enter vazio. Trate isso.
 
@@ -314,7 +314,7 @@ número, um id que não existe, um enter vazio. Trate isso.
 Se quiserem ir além do mínimo, adicionem um item `10. Ver histórico` que
 mostra **as últimas 10 consultas** feitas no CLI (qualquer opção, com os
 parâmetros que a pessoa digitou). A estrutura indicada é
-`collections.deque(maxlen=10)` — uma fila com limite de tamanho que descarta
+`collections.deque(maxlen=10)`, uma fila com limite de tamanho que descarta
 sozinha as entradas mais antigas, sem vocês escreverem uma linha de lógica
 para isso.
 
@@ -347,7 +347,7 @@ Formato do `consultas.json` que vocês recebem:
 }
 ```
 
-Formato do `respostas.json` que vocês geram — as chaves são os ids das
+Formato do `respostas.json` que vocês geram. As chaves são os ids das
 consultas, **como string**:
 
 ```json
@@ -366,7 +366,7 @@ retornam valor (todos menos o `__init__`). O mapeamento é direto: o tipo
 `"rating_de"` chama `catalogo.rating_de(...)`, e assim por diante.
 
 **As chaves de `parametros` são exatamente os nomes dos parâmetros dos
-métodos.** Isso não é coincidência — é para que vocês possam despachar sem
+métodos.** Isso não é coincidência: é para que vocês possam despachar sem
 escrever quinze `if`. Vale a pena descobrir o que `getattr` e `**` fazem
 antes de escrever o décimo `elif`.
 
@@ -422,8 +422,8 @@ máquina, com o mesmo dataset:
 
 | Abordagem | Tempo |
 |---|---|
-| Varre o catálogo a cada consulta | **7,1 s** — estoura |
-| Constrói índices uma vez no `__init__` | **0,35 s** — passa com 14× de folga |
+| Varre o catálogo a cada consulta | **7,1 s** (estoura) |
+| Constrói índices uma vez no `__init__` | **0,35 s** (passa com 14× de folga) |
 
 Ou seja: a solução que percorre a lista de 20 mil conteúdos procurando um id
 não fecha dentro do orçamento nem numa máquina rápida. No notebook de vocês
@@ -433,7 +433,7 @@ nem vão pensar no relógio.
 A diferença inteira está no `__init__`. Um dicionário `{id: conteudo}`
 construído uma vez transforma uma busca de 20 mil comparações num acesso
 direto. Pensem em quais dicionários cada um dos 16 métodos precisaria para
-responder em tempo constante — alguns pedem mais de um índice, e um deles
+responder em tempo constante. Alguns pedem mais de um índice, e um deles
 não dá para indexar de jeito nenhum (descubram qual, e por quê).
 
 Meçam o tempo de vocês:
@@ -453,7 +453,7 @@ python3 verificar.py respostas.json
 ```
 
 Isso confere as suas 20 primeiras respostas contra o `gabarito_publico.json`,
-que já veio no repositório. Se der 20/20, a confiança é alta — as 20 cobrem
+que já veio no repositório. Se der 20/20, a confiança é alta: as 20 cobrem
 vários tipos de consulta e alguns casos de borda. Se der menos, a saída
 mostra exatamente qual consulta errou, o que era esperado e o que vocês
 responderam.
@@ -474,7 +474,7 @@ python3 verificar.py respostas.json
 
 Se a primeira linha demorar mais que o orçamento de tempo, ou a segunda
 mostrar menos de 100%, o projeto não passa. Rodem esses dois comandos numa
-cópia limpa do repositório antes de entregar — é o teste mais barato que
+cópia limpa do repositório antes de entregar. É o teste mais barato que
 existe e pega 90% dos problemas de entrega.
 
 ---
@@ -486,13 +486,13 @@ A avaliação tem duas dimensões.
 ### Correção (piso obrigatório)
 
 O `verificar.py` roda contra o gabarito completo. Menos de 100% não passa.
-Esse é o piso — sem isso, o projeto não está completo. Não tem nota parcial
+Esse é o piso: sem isso, o projeto não está completo. Não tem nota parcial
 aqui, porque as regras canônicas estão todas escritas acima: não tem
 ambiguidade para negociar.
 
 ### Qualidade (o que eu vou ler)
 
-Eu (João) leio todo o código de vocês. Não é automático — é leitura humana.
+Eu (João) leio todo o código de vocês. Não é automático, é leitura humana.
 Vou olhar quatro coisas:
 
 **Nomes.** `x`, `lista` e `temp` são nomes ruins. `usuario`,
@@ -511,7 +511,7 @@ justifica a existência dela.
 **Tratamento defensivo na dose certa.** `.get()` onde faz sentido é bom.
 `try/except Exception` envolvendo blocos inteiros para "garantir que
 funciona" é sinal de que o código não entende o dado que está tratando.
-Tratamento defensivo deve ser cirúrgico, não genérico — vocês sabem
+Tratamento defensivo deve ser cirúrgico, não genérico: vocês sabem
 exatamente quais são as 7 sujeiras, então tratem essas 7.
 
 Vocês recebem feedback escrito individual depois da correção.
@@ -528,7 +528,7 @@ Vocês recebem feedback escrito individual depois da correção.
    [otrilha.com](https://otrilha.com).
 
 **Prazo: sexta-feira, 07/08/2026.** Se o repositório de vocês for privado,
-não esqueçam de nos dar acesso — repositório privado sem acesso conta como
+não esqueçam de nos dar acesso. Repositório privado sem acesso conta como
 não entregue, e a gente não tem como adivinhar.
 
 ---
@@ -536,7 +536,7 @@ não entregue, e a gente não tem como adivinhar.
 ## Fechamento
 
 Vocês têm tudo que precisam para construir isso. Comecem pelo
-`catalogo_dev.json` — 60 conteúdos, dá para ler com os olhos. Entendam o
+`catalogo_dev.json`, 60 conteúdos, dá para ler com os olhos. Entendam o
 que tem dentro, façam funcionar ali, e só depois liguem no
 `catalogo_final.json`. Quando bater na parede do orçamento de tempo, voltem
 no `__init__` e pensem em quais estruturas de dados respondem cada consulta

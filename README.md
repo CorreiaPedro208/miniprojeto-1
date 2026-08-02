@@ -146,8 +146,7 @@ que é uma lista de ids de conteúdo, e **a ordem da playlist importa**.
 | Faixa de álbum com `duracao_seg: null` | 4% | Somar defensivamente, pulando os nulos |
 
 Reparem que a lista acima é praticamente um roteiro do que vocês precisam
-implementar. Se alguma dessas te pegar de surpresa em produção, você perde
-uma tarde. Aqui vocês perdem cinco minutos porque já sabiam.
+implementar.
 
 ---
 
@@ -288,8 +287,8 @@ não existir, avise em vez de estourar um erro.
 
 **A posição da opção 3 é 1-based para o humano.** A pessoa digita `1` para
 ver o primeiro item da playlist, não `0`. O método `conteudo_na_posicao` em
-si continua 0-based, esse é o contrato da `Catalogo`, e é o que a correção
-automática espera. A conversão `posicao_digitada - 1` mora dentro do
+si continua 0-based, esse é o contrato da `Catalogo` e é o que o
+`consultas.json` assume. A conversão `posicao_digitada - 1` mora dentro do
 `cli.py`. E antes de pedir a posição, mostre o tamanho da playlist:
 
 ```
@@ -300,7 +299,7 @@ Qual posição? > 3
 Isso economiza chute do usuário.
 
 **Mostrem nome, não id.** Uma playlist impressa como
-`['t000009', 't000022', 't000041']` é inútil para um humano. Resolvam os ids
+`['t000009', 't000022', 't000041']` é inútil para qualquer pessoa. Resolvam os ids
 para título e artista na hora de exibir. Um método auxiliar na `Catalogo`
 que devolve `"Diamond Life, de Sade (álbum)"` a partir do id resolve isso e
 serve várias opções do menu.
@@ -318,7 +317,7 @@ parâmetros que a pessoa digitou). A estrutura indicada é
 sozinha as entradas mais antigas, sem vocês escreverem uma linha de lógica
 para isso.
 
-Esse item é opcional e não cai na correção automática, mas conta no critério
+Esse item é opcional e não entra no piso obrigatório, mas conta no critério
 de qualidade.
 
 ---
@@ -374,7 +373,7 @@ antes de escrever o décimo `elif`.
 
 ## Regras canônicas
 
-Estas 17 regras são o contrato da correção. São elas que decidem se uma
+Estas 17 regras são o contrato do projeto. São elas que decidem se uma
 resposta está certa. Se bater dúvida sobre um caso de borda, a resposta
 está aqui:
 
@@ -431,37 +430,55 @@ indexar de jeito nenhum: descubram qual, e por quê.
 
 ---
 
-## Autoverificação
+## Autoverificação (escrita por vocês)
 
-Vocês não precisam esperar a correção para saber se acertaram:
+Vocês não precisam esperar a correção para saber se acertaram. No repositório
+vem o `gabarito_publico.json`: as respostas **corretas** das 20 primeiras
+consultas do `consultas.json`. O formato é o mesmo do `respostas.json` que
+vocês vão gerar, id da consulta como chave:
 
-```bash
-python3 verificar.py respostas.json
+```json
+{
+  "1": 9.4,
+  "2": ["t000003", "t000041"],
+  "3": null
+}
 ```
 
-Isso confere as suas 20 primeiras respostas contra o `gabarito_publico.json`,
-que já veio no repositório. Se der 20/20, a confiança é alta: as 20 cobrem
-vários tipos de consulta e alguns casos de borda. Se der menos, a saída
-mostra exatamente qual consulta errou, o que era esperado e o que vocês
-responderam.
+O que a gente **não** entrega é o programa que compara os dois arquivos.
+Esse é de vocês. Escrevam um `conferir.py` que abre o `gabarito_publico.json`
+e o `respostas.json` de vocês, compara chave por chave e diz quantas bateram
+e quais não bateram.
 
-A correção final roda o mesmo script contra o gabarito completo, com as
-10 mil respostas.
+Não é trabalho perdido nem enfeite: é o jeito de vocês pararem de conferir
+resposta no olho. Cada vez que mudarem a `Catalogo`, rodar esse script leva
+um segundo e responde se vocês quebraram alguma coisa. Sem ele, cada mudança
+vira uma rodada de desconfiança.
+
+Duas armadilhas na comparação, que valem para qualquer conferidor de dados:
+
+- **Float não se compara com `==`.** `0.1 + 0.2` não é `0.3` em Python
+  (testem no terminal, é real). Comparem a diferença absoluta contra uma
+  tolerância pequena, tipo `abs(a - b) < 1e-6`.
+- **Resposta ausente não é resposta errada.** Se um id do gabarito nem
+  aparece no `respostas.json` de vocês, isso é um bug diferente de ter
+  respondido o valor errado. Vale distinguir os dois na saída.
+
+As 20 consultas públicas cobrem vários tipos e alguns casos de borda. Se as
+20 baterem, a confiança é alta. Podem commitar o `conferir.py` no repositório:
+ele conta a favor de vocês no critério de qualidade.
 
 ---
 
-## Como vamos corrigir
+## Antes de entregar
 
-Exatamente estes dois comandos, na raiz do fork de vocês:
+Façam o caminho inteiro numa **cópia limpa** do repositório: clonem o fork de
+vocês numa pasta nova, rodem o `main.py` do zero e passem o conferidor de
+vocês no `respostas.json` que sair dali.
 
-```bash
-python3 main.py consultas.json respostas.json
-python3 verificar.py respostas.json
-```
-
-Se a segunda linha mostrar menos de 100%, o projeto não passa. Rodem esses
-dois comandos numa cópia limpa do repositório antes de entregar. É o teste
-mais barato que existe e pega 90% dos problemas de entrega.
+É o teste mais barato que existe e pega 90% dos problemas de entrega,
+principalmente o clássico "funciona na minha pasta porque tem um arquivo que
+eu esqueci de commitar".
 
 ---
 
@@ -469,12 +486,16 @@ mais barato que existe e pega 90% dos problemas de entrega.
 
 A avaliação tem duas dimensões.
 
-### Correção (piso obrigatório)
+### As respostas (piso obrigatório)
 
-O `verificar.py` roda contra o gabarito completo. Menos de 100% não passa.
-Esse é o piso: sem isso, o projeto não está completo. Não tem nota parcial
-aqui, porque as regras canônicas estão todas escritas acima: não tem
-ambiguidade para negociar.
+O `respostas.json` de vocês precisa estar certo. Esse é o piso: sem isso, o
+projeto não está completo, por mais bonito que esteja o código.
+
+Não tem ambiguidade para negociar aqui, porque as 17 regras canônicas estão
+todas escritas acima. Toda decisão de caso de borda já foi tomada e está
+documentada: o que fazer com id inexistente, com rating ausente, com data no
+formato errado, com fila vazia. Se a resposta de vocês difere, é porque uma
+das 17 não foi seguida.
 
 ### Qualidade (o que eu vou ler)
 
@@ -514,8 +535,7 @@ Vocês recebem feedback escrito individual depois da correção.
    <https://www.otrilha.com/aulas/09>
 
 **Prazo: sexta-feira, 07/08/2026.** Se o repositório de vocês for privado,
-não esqueçam de nos dar acesso. Repositório privado sem acesso conta como
-não entregue, e a gente não tem como adivinhar.
+não esqueçam de nos dar acesso. 
 
 ---
 

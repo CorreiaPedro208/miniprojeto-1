@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
-respostas.json
 .DS_Store
 .venv/
+
+# Atenção: o respostas.json NÃO entra aqui. Ele é um dos arquivos que
+# vocês entregam, então precisa ser commitado junto com o código.

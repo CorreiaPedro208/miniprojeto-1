@@ -392,15 +392,21 @@ está aqui:
                            -> []   (intersecao_playlists)
 3.  listar_usuarios: TODOS os nomes em ordem alfabética (sorted padrão
                      do Python); sem parâmetros
-4.  buscar_usuario_por_nome: case-insensitive ("NiCHoLas" == "Nicholas");
+4.  buscar_usuario_por_nome: retorna o ID do usuário ("u07"), não o nome;
+                             case-insensitive ("NiCHoLas" == "Nicholas");
+                             comparação de igualdade, não "começa com":
+                             "Cecilia" não casa com "Cecilia de Tiago";
                              nome inexistente -> null
 5.  rating_de:        ausente -> null; string -> converter para float
 6.  duracao_total_de: musica -> duracao_seg
                       album  -> soma das faixas, ignorando as de duracao_seg null
 7.  generos_de: achatar qualquer estrutura (string, lista, aninhada);
                 devolver em ordem alfabética
-8.  conteudos_do_genero e plataformas_de: ordem alfabética;
-                                          sem resultados -> []
+8.  conteudos_do_genero: ids em ordem alfabética;
+                         nenhum conteúdo naquele gênero -> []
+    plataformas_de:      ordem alfabética;
+                         conteúdo sem plataformas -> [];
+                         id inexistente -> null (vale a regra 1)
 9.  conteudos_do_genero: comparação exata, sensível a maiúscula/minúscula
 10. playlist_de: na ordem original da playlist (NÃO alfabética)
 11. conteudo_na_posicao: 0-based; posição fora do intervalo -> null

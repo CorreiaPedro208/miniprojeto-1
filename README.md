@@ -529,7 +529,7 @@ Vocês recebem feedback escrito individual depois da correção.
 
 1. Confiram que a raiz do fork tem `catalogo.py`, `main.py`, `cli.py`,
    `respostas.json` e o `README.md` de vocês.
-2. Rodem os dois comandos da seção *Como vamos corrigir* uma última vez.
+2. Façam o teste da cópia limpa da seção *Antes de entregar* uma última vez.
 3. `git push` para o fork de vocês.
 4. Mandem **o link do repositório** no formulário de entrega da aula 09:
    <https://www.otrilha.com/aulas/09>

@@ -35,8 +35,8 @@ de vocês:
 1. Clique em **Fork** aqui no GitHub (canto superior direito).
 2. Clone o *seu* fork:
    ```bash
-   git clone https://github.com/<seu-usuario>/trilhasonora-miniprojeto.git
-   cd trilhasonora-miniprojeto
+   git clone https://github.com/<seu-usuario>/miniprojeto-1.git
+   cd miniprojeto-1
    ```
 3. Confira que o Python é 3.10 ou mais novo:
    ```bash

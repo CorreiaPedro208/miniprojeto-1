@@ -334,9 +334,11 @@ grava o resultado.
 Reparem que o `main.py` recebe dois caminhos, e nenhum deles é o do catálogo.
 Isso é de propósito: **o batch carrega sempre o `catalogo_final.json`**, os
 20 mil. O `consultas.json` foi gerado em cima dele, então rodar o batch no
-`catalogo_dev.json` faz praticamente toda resposta sair errada. Use o dev
-para desenvolver a `Catalogo` e para brincar no CLI, mas o `respostas.json`
-que vocês entregam sai do final.
+`catalogo_dev.json` faz praticamente toda resposta sair errada.
+
+O `catalogo_dev.json` serve para os primeiros passos, enquanto vocês ainda
+estão conferindo resultado na mão. Tanto o batch quanto o CLI são para rodar
+no `catalogo_final.json`.
 
 Formato do `consultas.json` que vocês recebem:
 

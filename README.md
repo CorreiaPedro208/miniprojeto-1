@@ -7,7 +7,7 @@
 Vocês vão construir um analisador do catálogo da **TrilhaSonora**, uma
 plataforma fictícia de streaming musical. O resultado é um produto de verdade:
 uma classe que modela o catálogo, um menu interativo no terminal e um modo
-batch que responde 10 mil consultas dentro de um orçamento de tempo.
+batch que responde 10 mil consultas de uma vez.
 
 ---
 
@@ -412,35 +412,22 @@ está aqui:
 
 ---
 
-## Orçamento de tempo
+## O `__init__` é onde mora a decisão
 
-**5 segundos** na máquina de referência para o `main.py` processar as
-10 mil consultas contra o `catalogo_final.json`.
+Reparem no tamanho dos dois catálogos: o `catalogo_dev.json` tem 60
+conteúdos, o `catalogo_final.json` tem 20 mil. E o `consultas.json` tem
+10 mil consultas. Multipliquem essas duas coisas antes de escrever a
+primeira linha do `main.py`.
 
-Esse número não é arbitrário. Nós medimos as duas abordagens na mesma
-máquina, com o mesmo dataset:
+Procurar um id percorrendo a lista de 20 mil conteúdos funciona. Fazer isso
+10 mil vezes é outra conversa. Um dicionário `{id: conteudo}` construído
+**uma vez** no `__init__` transforma essa busca inteira num acesso direto,
+e é por isso que o `__init__` recebe o caminho do JSON: ele carrega e
+prepara, os outros métodos só consultam.
 
-| Abordagem | Tempo |
-|---|---|
-| Varre o catálogo a cada consulta | **7,1 s** (estoura) |
-| Constrói índices uma vez no `__init__` | **0,35 s** (passa com 14× de folga) |
-
-Ou seja: a solução que percorre a lista de 20 mil conteúdos procurando um id
-não fecha dentro do orçamento nem numa máquina rápida. No notebook de vocês
-ela vai demorar bem mais. Já a solução indexada tem tanta folga que vocês
-nem vão pensar no relógio.
-
-A diferença inteira está no `__init__`. Um dicionário `{id: conteudo}`
-construído uma vez transforma uma busca de 20 mil comparações num acesso
-direto. Pensem em quais dicionários cada um dos 16 métodos precisaria para
-responder em tempo constante. Alguns pedem mais de um índice, e um deles
-não dá para indexar de jeito nenhum (descubram qual, e por quê).
-
-Meçam o tempo de vocês:
-
-```bash
-time python3 main.py consultas.json respostas.json
-```
+Pensem em quais dicionários cada um dos 16 métodos precisaria para responder
+sem varrer nada. Alguns pedem mais de um índice. Um deles não dá para
+indexar de jeito nenhum: descubram qual, e por quê.
 
 ---
 
@@ -472,10 +459,9 @@ python3 main.py consultas.json respostas.json
 python3 verificar.py respostas.json
 ```
 
-Se a primeira linha demorar mais que o orçamento de tempo, ou a segunda
-mostrar menos de 100%, o projeto não passa. Rodem esses dois comandos numa
-cópia limpa do repositório antes de entregar. É o teste mais barato que
-existe e pega 90% dos problemas de entrega.
+Se a segunda linha mostrar menos de 100%, o projeto não passa. Rodem esses
+dois comandos numa cópia limpa do repositório antes de entregar. É o teste
+mais barato que existe e pega 90% dos problemas de entrega.
 
 ---
 
@@ -538,8 +524,7 @@ não entregue, e a gente não tem como adivinhar.
 Vocês têm tudo que precisam para construir isso. Comecem pelo
 `catalogo_dev.json`, 60 conteúdos, dá para ler com os olhos. Entendam o
 que tem dentro, façam funcionar ali, e só depois liguem no
-`catalogo_final.json`. Quando bater na parede do orçamento de tempo, voltem
-no `__init__` e pensem em quais estruturas de dados respondem cada consulta
-em tempo constante.
+`catalogo_final.json`. Se em algum momento a coisa parecer pesada demais,
+voltem no `__init__`: quase sempre a resposta está lá.
 
 Boa construção. Qualquer dúvida, chama a gente.

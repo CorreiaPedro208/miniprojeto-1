@@ -1,8 +1,8 @@
 # Mini-Projeto TrilhaSonora
 
 > **Entrega: sexta-feira, 07/08/2026.**
-> Link do repositório no formulário de entrega do site do Trilha
-> ([otrilha.com](https://otrilha.com)). Só o link, nada de zip, nada de email.
+> Link do repositório no formulário de entrega da aula 09:
+> **<https://www.otrilha.com/aulas/09>**. Só o link, nada de zip, nada de email.
 
 Vocês vão construir um analisador do catálogo da **TrilhaSonora**, uma
 plataforma fictícia de streaming musical. O resultado é um produto de verdade:
@@ -510,8 +510,8 @@ Vocês recebem feedback escrito individual depois da correção.
    `respostas.json` e o `README.md` de vocês.
 2. Rodem os dois comandos da seção *Como vamos corrigir* uma última vez.
 3. `git push` para o fork de vocês.
-4. Mandem **o link do repositório** no formulário de entrega em
-   [otrilha.com](https://otrilha.com).
+4. Mandem **o link do repositório** no formulário de entrega da aula 09:
+   <https://www.otrilha.com/aulas/09>
 
 **Prazo: sexta-feira, 07/08/2026.** Se o repositório de vocês for privado,
 não esqueçam de nos dar acesso. Repositório privado sem acesso conta como

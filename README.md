@@ -331,6 +331,13 @@ python3 main.py consultas.json respostas.json
 Lê o arquivo de consultas, responde todas **na ordem em que aparecem**, e
 grava o resultado.
 
+Reparem que o `main.py` recebe dois caminhos, e nenhum deles é o do catálogo.
+Isso é de propósito: **o batch carrega sempre o `catalogo_final.json`**, os
+20 mil. O `consultas.json` foi gerado em cima dele, então rodar o batch no
+`catalogo_dev.json` faz praticamente toda resposta sair errada. Use o dev
+para desenvolver a `Catalogo` e para brincar no CLI, mas o `respostas.json`
+que vocês entregam sai do final.
+
 Formato do `consultas.json` que vocês recebem:
 
 ```json

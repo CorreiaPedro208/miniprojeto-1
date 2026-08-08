@@ -102,3 +102,17 @@ class Catalogo:
         for conjunto in conjuntos[1:]:
             comuns = comuns & conjunto
         return sorted(comuns)
+
+    def enfileirar(self, conteudo_id: str) -> bool:
+        if conteudo_id not in self._conteudos:
+            return False
+        self._fila.append(conteudo_id)
+        return True
+
+    def proximo(self) -> str | None:
+        if len(self._fila) == 0:
+            return None
+        return self._fila.popleft()
+
+    def fila_atual(self) -> list[str]:
+        return list(self._fila)

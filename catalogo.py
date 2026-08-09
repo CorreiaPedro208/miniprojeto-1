@@ -19,6 +19,15 @@ def converter_data(data):
     return data
 
 
+def achatar_generos(generos):
+    if isinstance(generos, str):
+        return [generos]
+    planos = []
+    for item in generos:
+        planos.extend(achatar_generos(item))
+    return planos
+
+
 class Conteudo:
     def __init__(self, dados):
         self.id = dados["id"]
@@ -26,8 +35,8 @@ class Conteudo:
         self.artista = dados["artista"]
         self.ano = dados["ano"]
         self.rating = converter_rating(dados.get("rating"))
-        self.generos = dados.get("generos")
-        self.plataformas = dados.get("plataformas", [])
+        self.generos = sorted(achatar_generos(dados.get("generos", [])))
+        self.plataformas = sorted(dados.get("plataformas", []))
         self.data_adicionado = converter_data(dados.get("data_adicionado"))
 
 
@@ -74,6 +83,16 @@ class Catalogo:
         for registro in dados["conteudos"]:
             conteudo = criar_conteudo(registro)
             self._conteudos[conteudo.id] = conteudo
+
+        self._ids_por_genero = {}
+        for conteudo in self._conteudos.values():
+            for genero in conteudo.generos:
+                if genero not in self._ids_por_genero:
+                    self._ids_por_genero[genero] = []
+                self._ids_por_genero[genero].append(conteudo.id)
+
+        for ids in self._ids_por_genero.values():
+            ids.sort()
 
         self._usuarios = {}
         self._id_por_nome_minusculo = {}
@@ -128,17 +147,26 @@ class Catalogo:
             return None
         return conteudo.rating
 
+    def generos_de(self, conteudo_id: str) -> list[str] | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+        return list(conteudo.generos)
+
     def plataformas_de(self, conteudo_id: str) -> list[str] | None:
         conteudo = self._conteudos.get(conteudo_id)
         if conteudo is None:
             return None
-        return sorted(conteudo.plataformas)
+        return list(conteudo.plataformas)
 
     def data_adicionado_de(self, conteudo_id: str) -> str | None:
         conteudo = self._conteudos.get(conteudo_id)
         if conteudo is None:
             return None
         return conteudo.data_adicionado
+
+    def conteudos_do_genero(self, genero: str) -> list[str]:
+        return list(self._ids_por_genero.get(genero, []))
 
     def descricao_de(self, conteudo_id: str) -> str | None:
         conteudo = self._conteudos.get(conteudo_id)

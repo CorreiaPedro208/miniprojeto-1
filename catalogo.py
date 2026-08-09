@@ -10,13 +10,14 @@ class Conteudo:
         self.ano = dados["ano"]
         self.rating = dados.get("rating")
         self.generos = dados.get("generos")
-        self.plataformas = dados.get("plataformas")
+        self.plataformas = dados.get("plataformas", [])
         self.data_adicionado = dados.get("data_adicionado")
 
 
 class Musica(Conteudo):
     def __init__(self, dados):
         super().__init__(dados)
+        self.nome_do_tipo = "música"
         self.duracao_seg = dados.get("duracao_seg")
         self.engajamento = dados.get("engajamento", {})
 
@@ -24,6 +25,7 @@ class Musica(Conteudo):
 class Album(Conteudo):
     def __init__(self, dados):
         super().__init__(dados)
+        self.nome_do_tipo = "álbum"
         self.faixas = dados.get("faixas", [])
 
 
@@ -102,6 +104,18 @@ class Catalogo:
         for conjunto in conjuntos[1:]:
             comuns = comuns & conjunto
         return sorted(comuns)
+
+    def plataformas_de(self, conteudo_id: str) -> list[str] | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+        return sorted(conteudo.plataformas)
+
+    def descricao_de(self, conteudo_id: str) -> str | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+        return f"{conteudo.titulo}, de {conteudo.artista} ({conteudo.nome_do_tipo})"
 
     def enfileirar(self, conteudo_id: str) -> bool:
         if conteudo_id not in self._conteudos:

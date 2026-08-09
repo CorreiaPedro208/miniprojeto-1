@@ -2,16 +2,33 @@ import json
 from collections import deque
 
 
+def converter_rating(rating):
+    if rating is None:
+        return None
+    if isinstance(rating, str):
+        rating = rating.replace(",", ".")
+    return float(rating)
+
+
+def converter_data(data):
+    if data is None:
+        return None
+    if "/" in data:
+        dia, mes, ano = data.split("/")
+        return f"{ano}-{mes}-{dia}"
+    return data
+
+
 class Conteudo:
     def __init__(self, dados):
         self.id = dados["id"]
         self.titulo = dados["titulo"]
         self.artista = dados["artista"]
         self.ano = dados["ano"]
-        self.rating = dados.get("rating")
+        self.rating = converter_rating(dados.get("rating"))
         self.generos = dados.get("generos")
         self.plataformas = dados.get("plataformas", [])
-        self.data_adicionado = dados.get("data_adicionado")
+        self.data_adicionado = converter_data(dados.get("data_adicionado"))
 
 
 class Musica(Conteudo):
@@ -105,11 +122,23 @@ class Catalogo:
             comuns = comuns & conjunto
         return sorted(comuns)
 
+    def rating_de(self, conteudo_id: str) -> float | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+        return conteudo.rating
+
     def plataformas_de(self, conteudo_id: str) -> list[str] | None:
         conteudo = self._conteudos.get(conteudo_id)
         if conteudo is None:
             return None
         return sorted(conteudo.plataformas)
+
+    def data_adicionado_de(self, conteudo_id: str) -> str | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+        return conteudo.data_adicionado
 
     def descricao_de(self, conteudo_id: str) -> str | None:
         conteudo = self._conteudos.get(conteudo_id)

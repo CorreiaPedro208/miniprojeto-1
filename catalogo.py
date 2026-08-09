@@ -19,6 +19,14 @@ def converter_data(data):
     return data
 
 
+def converter_execucoes(execucoes):
+    if execucoes is None:
+        return None
+    if isinstance(execucoes, str):
+        execucoes = execucoes.replace(",", "")
+    return int(execucoes)
+
+
 def achatar_generos(generos):
     if isinstance(generos, str):
         return [generos]
@@ -47,12 +55,28 @@ class Musica(Conteudo):
         self.duracao_seg = dados.get("duracao_seg")
         self.engajamento = dados.get("engajamento", {})
 
+    def duracao_total(self):
+        return self.duracao_seg
+
+    def execucoes(self):
+        return converter_execucoes(self.engajamento.get("execucoes"))
+
 
 class Album(Conteudo):
     def __init__(self, dados):
         super().__init__(dados)
         self.nome_do_tipo = "álbum"
         self.faixas = dados.get("faixas", [])
+
+    def duracao_total(self):
+        total = 0
+        for faixa in self.faixas:
+            if faixa["duracao_seg"] is not None:
+                total += faixa["duracao_seg"]
+        return total
+
+    def execucoes(self):
+        return None
 
 
 class Usuario:
@@ -147,6 +171,12 @@ class Catalogo:
             return None
         return conteudo.rating
 
+    def duracao_total_de(self, conteudo_id: str) -> int | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+        return conteudo.duracao_total()
+
     def generos_de(self, conteudo_id: str) -> list[str] | None:
         conteudo = self._conteudos.get(conteudo_id)
         if conteudo is None:
@@ -164,6 +194,12 @@ class Catalogo:
         if conteudo is None:
             return None
         return conteudo.data_adicionado
+
+    def execucoes_de(self, conteudo_id: str) -> int | None:
+        conteudo = self._conteudos.get(conteudo_id)
+        if conteudo is None:
+            return None
+        return conteudo.execucoes()
 
     def conteudos_do_genero(self, genero: str) -> list[str]:
         return list(self._ids_por_genero.get(genero, []))
